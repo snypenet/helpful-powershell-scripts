@@ -66,7 +66,7 @@ Add-Content $formattedFileName "<!doctype html>
     <body><pre><code>"
 
     foreach($line in Get-Content $FileName) {
-        $line = $line.Replace("", " ")
+        $line = $line.Replace("", " ").Replace("ΓöÇ", "")
         $characterAccumulator = ""
         $formattingCount = 0
         foreach($character in [char[]]$line) {
