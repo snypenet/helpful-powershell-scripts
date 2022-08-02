@@ -4,6 +4,8 @@ param(
   $FileName
 )
 
+Write-Host "Formatting Output..."
+
 $colorMatches = @{
     "0" = 'black';
     "1" = 'bold';
@@ -18,7 +20,7 @@ $colorMatches = @{
     "90" = 'grey';
 }
 
-$formattedFileName = $FileName + ".html"
+$formattedFileName = $FileName.Replace(".plan", ".plan.html")
 
 if (Test-Path $formattedFileName) {
     Remove-Item $formattedFileName
@@ -63,16 +65,33 @@ Add-Content $formattedFileName "<!doctype html>
     </head>
     <body><pre><code>"
 
-    foreach($line in Get-Content $fileName) {
-        $formattedLine = $line.Replace("[0m", "").Replace("ΓöÇ", "").Replace("", "")
-        foreach($match in $colorMatches.Keys) {
-            $pattern = "[$($match)m"
-            if ($formattedLine.Contains($pattern)) {
-                $formattedLine = "<span class='$($colorMatches[$match])'>$($formattedLine.Replace($pattern, ''))</span>"
-                break
+    foreach($line in Get-Content $FileName) {
+        $line = $line.Replace("", " ")
+        $characterAccumulator = ""
+        $formattingCount = 0
+        foreach($character in [char[]]$line) {
+            $characterAccumulator += $character
+            if (($character -eq " " -or $character -eq "\n") -and $formattingCount -gt 0) {
+                $characterAccumulator = $characterAccumulator + "</span>"
+                $formattingCount--
+            } elseif ($characterAccumulator -Match '\[\d{1,2}m') {
+                foreach($match in $colorMatches.Keys) {
+                    $snapshot = $characterAccumulator
+                    $characterAccumulator = $characterAccumulator.Replace("[$($match)m", "<span class='$($colorMatches[$match])'>")
+                    if($snapshot -ne $characterAccumulator) {
+                        $formattingCount++
+                        break
+                    } 
+                }
             }
         }
-        Add-Content $formattedFileName $formattedLine
+        for($c = $formattingCount; $c -gt 0; $c--) {
+            $characterAccumulator = $characterAccumulator + "</span>"
+        }
+
+        Add-Content $formattedFileName $characterAccumulator
     }
 
     Add-Content $formattedFileName "</code></pre></body>"
+
+    Write-Host "All Done"
