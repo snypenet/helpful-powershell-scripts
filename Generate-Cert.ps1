@@ -6,8 +6,8 @@ Param(
     $CreatePfx,
     [string]
     $Provider="Microsoft Enhanced RSA and AES Cryptographic Provider",
-	[string[]]
-	$SubjectAltNames
+    [string[]]
+    $SubjectAltNames
 )
 
 $CertName = $CertName.Trim()
