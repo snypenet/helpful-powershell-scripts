@@ -1,3 +1,8 @@
+Param(
+    [switch]
+    $WhatIf
+)
+
 # This script will delete all local branches that are not in your remote.  Use at your own risk!!!
 
 & git fetch -p | Out-Null
@@ -6,7 +11,7 @@ $localBranches = & git branch
 
 
 foreach($lb in $localBranches) {
-    $lb = $lb.Trim()
+    $lb = $lb.Replace("*", "").Trim()
 
     $found = $False
     foreach($rb in $remoteBranches) {
@@ -17,6 +22,10 @@ foreach($lb in $localBranches) {
 
     if (-Not $found) {
         Write-Host "Deleting $lb"
-        & git branch -D $lb
+        if (-Not $WhatIf) {
+            & git branch -D $lb
+        } else {
+            Write-Host "WhatIf is set.  $lb is NOT deleted"
+        }
     }
 }
