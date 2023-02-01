@@ -20,7 +20,6 @@ if (-Not (Test-Path $Path)) {
 }
 
 $files = Get-ChildItem -Path $Path -Filter "*.mkv"
-Write-Host $files
 
 $count = $StartingEpisode
 foreach($file in $files) {
