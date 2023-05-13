@@ -8,6 +8,8 @@ param(
     [Parameter(Mandatory = $true)]
     [int]
     $Season,
+	[string]
+	$Extension = "mkv",
     [Parameter(Mandatory = $true)]
     [int]
     $StartingEpisode,
@@ -19,12 +21,12 @@ if (-Not (Test-Path $Path)) {
     return
 }
 
-$files = Get-ChildItem -Path $Path -Filter "*.mkv"
+$files = Get-ChildItem -Path $Path -Filter "*.$Extension" | Sort-Object { [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(20) })}
 
 $count = $StartingEpisode
 foreach($file in $files) {
     $directory = Split-Path -Path $file
-    $newName = "$directory/$Name S$Season E$count.mkv"
+    $newName = "$directory/$Name S$Season E$count.$Extension"
     Write-Host "Renaming $file to $newName"
     if (-Not $WhatIf) {
         Move-item $file $newName
