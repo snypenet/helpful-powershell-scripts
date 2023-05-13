@@ -8,8 +8,8 @@ param(
     [Parameter(Mandatory = $true)]
     [int]
     $Season,
-	[string]
-	$Extension = "mkv",
+    [string]
+    $Extension = "mkv",
     [Parameter(Mandatory = $true)]
     [int]
     $StartingEpisode,
