@@ -25,11 +25,11 @@ $files = Get-ChildItem -Path $Path -Filter "*.$Extension" | Sort-Object { [regex
 
 $count = $StartingEpisode
 foreach($file in $files) {
-    $directory = Split-Path -Path $file
-    $newName = "$directory/$Name S$Season E$count.$Extension"
-    Write-Host "Renaming $file to $newName"
+    $directory = Split-Path -Path $file.FullName
+    $newName = "$directory\$Name S$Season E$count.$Extension"
+    Write-Host "Renaming $($file.FullName) to $newName"
     if (-Not $WhatIf) {
-        Move-item $file $newName
+        Move-item $file.FullName $newName
     }
     $count += 1
 }
